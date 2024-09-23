@@ -1,7 +1,7 @@
 # run_fastapi.ps1
 
 # Define paths
-$projectPath = "D:\_DA+DS\03_Python\business_api_python"
+$projectPath = "<path>"
 $venvPath = "$projectPath\myenv"
 $scriptPath = "$projectPath\main.py"
 

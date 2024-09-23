@@ -64,7 +64,7 @@ class Item(BaseModel):
     BLOODGR: str = None
     GENDER: str = None
     ADD1: str = None
-    ADD2: Optional[str]  # Allow ADD2 to be None
+    ADD2: Optional[str]  # Allow ADD2 to be Optional
     BLOCK: str = None
     WARD: str = None
     BOOTH: str = None
@@ -97,7 +97,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": token, "token_type": "bearer"}
 
 
-
+#fetch all rows
 @app.get("/items")
 async def fetch_all_rows(current_user: dict = Depends(get_current_user)):
     conn = database.get_connection(); 
@@ -132,7 +132,8 @@ async def fetch_all_rows(current_user: dict = Depends(get_current_user)):
     else:
         raise HTTPException(status_code=404, detail="No items found")
 
-@app.get("/items/{item_id}")
+#fetch row based on id
+@app.get("/items/id/{item_id}")
 async def fetch_all_rows_by_id(item_id: int, current_user: dict = Depends(get_current_user)):
     conn = database.get_connection()
     cursor = conn.cursor()
@@ -164,3 +165,178 @@ async def fetch_all_rows_by_id(item_id: int, current_user: dict = Depends(get_cu
         )
     else:
         raise HTTPException(status_code=404, detail="Item not found")
+
+#fetch rows based on city        
+@app.get("/items/city/{city_name}")
+async def fetch_all_rows_by_city(city_name: str, current_user: dict = Depends(get_current_user)):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM dbo.MemMaster WHERE CITY = ?", city_name)
+    rows = cursor.fetchall()
+    if rows:
+        items = [Item(
+            ID = row[0],
+            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID = row[2],
+            MNAME = row[3],
+            FNAME = row[4],
+            QUAL = row[5],
+            BLOODGR = row[6],
+            GENDER = row[7],
+            ADD1 = row[8],
+            ADD2=row[9] if row[9] is not None else None,
+            BLOCK = row[10],
+            WARD = row[11],
+            BOOTH = row[12],
+            CITY = row[13],
+            DISTRICT = row[14],
+            STATE = row[15],
+            PIN = row[16],
+            EMAIL = row[17],
+            TELE1 = row[18],
+            PROF = row[19],
+            PROF2 = row[20]
+        ) for row in rows]
+        return items
+    else:
+        raise HTTPException(status_code=404, detail="No items found")
+
+#fetch rows based on district
+@app.get("/items/district/{district_name}")
+async def fetch_all_rows_by_district(district_name: str, current_user: dict = Depends(get_current_user)):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM dbo.MemMaster WHERE DISTRICT = ?", district_name)
+    rows = cursor.fetchall()
+    if rows:
+        items = [Item(
+            ID = row[0],
+            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID = row[2],
+            MNAME = row[3],
+            FNAME = row[4],
+            QUAL = row[5],
+            BLOODGR = row[6],
+            GENDER = row[7],
+            ADD1 = row[8],
+            ADD2=row[9] if row[9] is not None else None,
+            BLOCK = row[10],
+            WARD = row[11],
+            BOOTH = row[12],
+            CITY = row[13],
+            DISTRICT = row[14],
+            STATE = row[15],
+            PIN = row[16],
+            EMAIL = row[17],
+            TELE1 = row[18],
+            PROF = row[19],
+            PROF2 = row[20]
+        ) for row in rows]
+        return items
+    else:
+        raise HTTPException(status_code=404, detail="No items found")
+        
+#fetch rows based on pin        
+@app.get("/items/pin/{pin}")
+async def fetch_all_rows_by_pin(pin: str, current_user: dict = Depends(get_current_user)):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM dbo.MemMaster WHERE PIN = ?", pin)
+    rows = cursor.fetchall()
+    if rows:
+        items = [Item(
+            ID = row[0],
+            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID = row[2],
+            MNAME = row[3],
+            FNAME = row[4],
+            QUAL = row[5],
+            BLOODGR = row[6],
+            GENDER = row[7],
+            ADD1 = row[8],
+            ADD2=row[9] if row[9] is not None else None,
+            BLOCK = row[10],
+            WARD = row[11],
+            BOOTH = row[12],
+            CITY = row[13],
+            DISTRICT = row[14],
+            STATE = row[15],
+            PIN = row[16],
+            EMAIL = row[17],
+            TELE1 = row[18],
+            PROF = row[19],
+            PROF2 = row[20]
+        ) for row in rows]
+        return items
+    else:
+        raise HTTPException(status_code=404, detail="No items found")
+
+#fetch rows based on state     
+@app.get("/items/state/{state_name}")
+async def fetch_all_rows_by_state(state: str, current_user: dict = Depends(get_current_user)):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM dbo.MemMaster WHERE STATE = ?", state)
+    rows = cursor.fetchall()
+    if rows:
+        items = [Item(
+            ID = row[0],
+            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID = row[2],
+            MNAME = row[3],
+            FNAME = row[4],
+            QUAL = row[5],
+            BLOODGR = row[6],
+            GENDER = row[7],
+            ADD1 = row[8],
+            ADD2=row[9] if row[9] is not None else None,
+            BLOCK = row[10],
+            WARD = row[11],
+            BOOTH = row[12],
+            CITY = row[13],
+            DISTRICT = row[14],
+            STATE = row[15],
+            PIN = row[16],
+            EMAIL = row[17],
+            TELE1 = row[18],
+            PROF = row[19],
+            PROF2 = row[20]
+        ) for row in rows]
+        return items
+    else:
+        raise HTTPException(status_code=404, detail="No items found")        
+        
+#fetch rows based on gender        
+@app.get("/items/gender/{gender}")
+async def fetch_all_rows_by_gender(gender: str, current_user: dict = Depends(get_current_user)):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM dbo.MemMaster WHERE GENDER = ?", gender)
+    rows = cursor.fetchall()
+    if rows:
+        items = [Item(
+            ID = row[0],
+            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID = row[2],
+            MNAME = row[3],
+            FNAME = row[4],
+            QUAL = row[5],
+            BLOODGR = row[6],
+            GENDER = row[7],
+            ADD1 = row[8],
+            ADD2=row[9] if row[9] is not None else None,
+            BLOCK = row[10],
+            WARD = row[11],
+            BOOTH = row[12],
+            CITY = row[13],
+            DISTRICT = row[14],
+            STATE = row[15],
+            PIN = row[16],
+            EMAIL = row[17],
+            TELE1 = row[18],
+            PROF = row[19],
+            PROF2 = row[20]
+        ) for row in rows]
+        return items
+    else:
+        raise HTTPException(status_code=404, detail="No items found")

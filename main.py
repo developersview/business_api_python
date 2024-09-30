@@ -5,7 +5,7 @@ Created on Fri Sep 20 01:56:40 2024
 @author: pcslg
 """
 
-from fastapi import FastAPI, HTTPException, Depends, Security
+from fastapi import FastAPI, HTTPException, Depends, Security, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import Optional
@@ -97,40 +97,99 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": token, "token_type": "bearer"}
 
 
-#fetch all rows
 @app.get("/items")
-async def fetch_all_rows(current_user: dict = Depends(get_current_user)):
-    conn = database.get_connection(); 
-    cursor = conn.cursor();
-    cursor.execute(query_to_fetch_all_rows)
+async def fetch_all_rows_by_different_filters(
+    item_id: Optional[int] = Query(None, description="Filter by item ID"),
+    city: Optional[str] = Query(None, description="Filter by city"),
+    district: Optional[str] = Query(None, description="Filter by district"),
+    state: Optional[str] = Query(None, description="Filter by state"),
+    pin: Optional[str] = Query(None, description="Filter by pin"),
+    gender: Optional[str] = Query(None, description="Filter by gender"),
+    bloodgr: Optional[str] = Query(None, description="Filter by blood group"),
+    block: Optional[str] = Query(None, description="Filter by block"),
+    booth: Optional[str] = Query(None, description="Filter by booth"),
+    prof: Optional[str] = Query(None, description="Filter by profession"),
+    current_user: dict = Depends(get_current_user)
+):
+    conn = database.get_connection()
+    cursor = conn.cursor()
+
+    # Construct the SQL query with conditional filters
+    query = "SELECT * FROM [dbo].[MemMaster] WHERE 1=1"
+    params = []
+
+    if item_id:
+        query += " AND ID = ?"
+        params.append(item_id)
+
+    if city:
+        query += " AND CITY = ?"
+        params.append(city)
+    
+    if district:
+        query += " AND DISTRICT = ?"
+        params.append(district)
+
+    if state:
+        query += " AND STATE = ?"
+        params.append(state)
+        
+    if pin:
+        query += " AND PIN = ?"
+        params.append(pin)
+
+    if gender:
+        query += " AND GENDER = ?"
+        params.append(gender)
+        
+    if bloodgr:
+        query += " AND BLOODGR = ?"
+        params.append(bloodgr)
+    
+    if block:
+        query += " AND BLOCK = ?"
+        params.append(block)
+        
+    if booth:
+        query += " AND BOOTH = ?"
+        params.append(booth)
+    
+    if prof:
+        query += " AND PROF = ?"
+        params.append(prof)
+
+    cursor.execute(query, params)
     rows = cursor.fetchall()
+    
     if rows:
         items = [Item(
-            ID = row[0],
-            JDATE = row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
-            REFID = row[2],
-            MNAME = row[3],
-            FNAME = row[4],
-            QUAL = row[5],
-            BLOODGR = row[6],
-            GENDER = row[7],
-            ADD1 = row[8],
+            ID=row[0],
+            JDATE=row[1].strftime("%Y-%m-%d"), # Convert JDATE to string 
+            REFID=row[2],
+            MNAME=row[3],
+            FNAME=row[4],
+            QUAL=row[5],
+            BLOODGR=row[6],
+            GENDER=row[7],
+            ADD1=row[8],
             ADD2=row[9] if row[9] is not None else None,
-            BLOCK = row[10],
-            WARD = row[11],
-            BOOTH = row[12],
-            CITY = row[13],
-            DISTRICT = row[14],
-            STATE = row[15],
-            PIN = row[16],
-            EMAIL = row[17],
-            TELE1 = row[18],
-            PROF = row[19],
-            PROF2 = row[20]
+            BLOCK=row[10],
+            WARD=row[11],
+            BOOTH=row[12],
+            CITY=row[13],
+            DISTRICT=row[14],
+            STATE=row[15],
+            PIN=row[16],
+            EMAIL=row[17],
+            TELE1=row[18],
+            PROF=row[19],
+            PROF2=row[20]
         ) for row in rows]
         return items
     else:
         raise HTTPException(status_code=404, detail="No items found")
+
+
 
 #fetch row based on id
 @app.get("/items/id/{item_id}")
@@ -340,3 +399,4 @@ async def fetch_all_rows_by_gender(gender: str, current_user: dict = Depends(get
         return items
     else:
         raise HTTPException(status_code=404, detail="No items found")
+        
